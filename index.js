@@ -4,34 +4,6 @@ const { parseString } = require('xml2js');
 
 //Parse CSV
 
-// function parseCSV(filePath) {
-//     const fileContent = fs.readFileSync(filePath, 'utf-8');
-//     const rows = fileContent.split('\n'); // Splitting the content into rows
-
-//     // Assuming the first row contains headers
-//     const headers = rows[0].split(',');
-
-//     const data = [];
-
-//     for (let i = 1; i < rows.length; i++) {
-//         const values = rows[i].split(',');
-//         if (values.length === headers.length) {
-//             const obj = {};
-//             for (let j = 0; j < headers.length; j++) {
-//                 obj[headers[j].trim()] = values[j].trim();
-//             }
-//             data.push(obj);
-//         }
-//     }
-
-//     return data;
-// }
-
-
-
-// //Parsing CSV file
-// const filePath = 'records.csv';
-// const parsedData = parseCSV(filePath);
 
 function readCSV(filePath) {
     try {
