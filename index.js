@@ -1,9 +1,26 @@
 const fs = require('fs');
+const path = require('path');
 const { parseString } = require('xml2js');
 
 
-//Parse CSV
+// Check if the file exists
+function checkFileExist(filePath) {
+    try {
+        fs.accessSync(filePath, fs.constants.F_OK);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
 
+//Round numbers ti decimal places
+function roundToDecimalPlaces(number, decimalPlaces) {
+    const factor = 10 ** decimalPlaces;
+    return Math.ceil(number * factor) / factor;
+}
+
+
+//Parse CSV
 
 function readCSV(filePath) {
     try {
@@ -36,21 +53,18 @@ function csvParse(content) {
 }
 
 
-//Round numbers ti decimal places
-function roundToDecimalPlaces(number, decimalPlaces) {
-    const factor = 10 ** decimalPlaces;
-    return Math.ceil(number * factor) / factor;
-}
 
 function parseCSV() {
-    const filePath = 'records.csv';
 
-    const csvContent = readCSV(filePath);
+    const directoryPath = __dirname;
+    const fileName = 'records.csv';
+    const filePath = path.join(directoryPath, fileName);
 
-    if (csvContent) {
+    if (checkFileExist(filePath)) {
+        const csvContent = readCSV(filePath);
+
         const parsedData = csvParse(csvContent);
-        //console.log(parsedData);
-        // Process the parsed data as needed
+
         // Array of reference elemnts
         const arrOfRefernces = parsedData.map(el => el.Reference);
 
@@ -68,12 +82,13 @@ function parseCSV() {
         }
 
 
-        // Assuming parsedData is the array of objects obtained from parsing the CSV
+        // parsedData is the array of objects obtained from parsing the CSV
         for (const record of parsedData) {
             //sum of start balance and mutation
             let sum = parseFloat(record['Start Balance']) + parseFloat(record.Mutation);
             //Log records if balance is invalid
             if (roundToDecimalPlaces(sum, 2) !== parseFloat(record['End Balance'])) {
+
                 console.log("Record filed in CSV records! The end balance is invalid");
                 console.log('Reference:', record.Reference);
                 console.log('Account Number:', record['Account Number']);
@@ -82,15 +97,16 @@ function parseCSV() {
                 console.log('Mutation:', parseFloat(record.Mutation));
                 console.log('End Balance:', parseFloat(record['End Balance']));
                 console.log('!!!'); // Separator between records
+
             }
 
         }
+    } else {
+        console.log(`The file "${fileName}" does not exist in the directory.`);
     }
 }
 
 parseCSV();
-
-
 
 
 
@@ -117,11 +133,17 @@ function readXML(filePath) {
     });
 }
 
+
 // Parsing XML file
 async function parseXML() {
-    const filePath = 'records.xml';
 
-    try {
+    const directoryPath = __dirname;
+    const fileName = 'records.xml';
+    const filePath = path.join(directoryPath, fileName);
+
+
+
+    if (checkFileExist(filePath)) {
         const xmlContent = await readXML(filePath);
 
         parseString(xmlContent, { explicitArray: false }, (err, result) => {
@@ -163,8 +185,8 @@ async function parseXML() {
             }
 
         });
-    } catch (error) {
-        console.error(error);
+    } else {
+        console.log(`The file "${fileName}" does not exist in the directory.`);
     }
 }
 
